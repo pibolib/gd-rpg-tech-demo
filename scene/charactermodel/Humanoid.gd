@@ -21,16 +21,13 @@ enum CHAR_ACTION {
 	DAMAGE_HEAVY, #heavy damge reaction
 	DEATH, #death animation
 }
-var codeanim = [
-	"WALK"
-]
 
 export var outline_color = Color(0,0,0)
 
 var dir = 0
 var torso_offset = 12
 var move = true
-var state = "WALK"
+var state = "ATTACK_ONE_HAND_SWIPE"
 var equip_left = 0
 var equip_right = -1
 
@@ -53,16 +50,8 @@ func _process(delta):
 	set_leg_sprite(dir)
 	set_hand_sprite(dir)
 	set_head_sprite(dir)
-	if codeanim.has(state):
-		match state:
-			"WALK":
-				walk($AnimationHandler.current_animation_position)
-	if equip_left != -1:
-		if $Torso/Arm/Hand1.scale.x == 1:
-			$Torso/Arm/Hand1/Equip.rotation = -dir
-		else:
-			$Torso/Arm/Hand1/Equip.rotation = dir + PI
-		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(dir)+1)/8,1)
+	update_equip(dir)
+	handle_state()
 	update_z()
 
 func set_torso_sprite(angle): #sets torso sprite based on angle
@@ -148,13 +137,6 @@ func get_sprite_facing_2dir(angle): #returns a sprite index for a body part with
 func trig_pos(angle, dist, mod=0): #returns a vector2 position given an angle and a distance. also allows for a modifier to the angle.
 	return Vector2(cos(angle+mod)*dist,sin(angle+mod)*dist/2)
 
-func _on_AnimationHandler_animation_finished(anim_name): #this function will be pretty large.
-	match anim_name:
-		"IDLE":
-			$AnimationHandler.play()
-		"WALK":
-			$AnimationHandler.play()
-
 func update_z(): #updates z_index for all limbs which rotate around main character.
 	var limbs = [
 		$Torso/Arm/Hand1, $Torso/Arm/Hand2, $Legs/Foot1, $Legs/Foot2
@@ -170,3 +152,33 @@ func walk(time): #this animation lasts for one second and covers a few footsteps
 	$Torso/Arm/Hand2.position += tangent * sin(2*time*PI) * 2
 	$Torso/Arm/Hand1.position.y += abs(sin(2*PI*time))
 	$Torso/Arm/Hand2.position.y += abs(sin(2*PI*time+PI))
+	update_equip(dir)
+
+func attack_one_hand_swipe(time): #this animation lasts for 0.5 seconds.
+	var tangent = Vector2(cos(dir),sin(dir)*0.5)
+	$Legs/Foot1.position += tangent * sin(-1) * 6
+	$Legs/Foot2.position += tangent * sin(1) * 6
+	$Torso/Arm/Hand2.position += tangent * sin(-1-time) * 2
+	set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
+	update_equip(dir-time*4+PI/4)
+
+func handle_state():
+	match state:
+		"WALK":
+			walk($AnimationHandler.current_animation_position)
+		"ATTACK_ONE_HAND_SWIPE":
+			attack_one_hand_swipe($AnimationHandler.current_animation_position)
+
+func _on_AnimationHandler_animation_finished(anim_name): #this function will be pretty large.
+	match anim_name:
+		"ATTACK_ONE_HAND_SWIPE":
+			state = "ATTACK_ONE_HAND_SWIPE"
+	$AnimationHandler.play()
+
+func update_equip(angle, limb=0): #updates equipment positioning given angle
+	if equip_left != -1 and limb == 0:
+		if $Torso/Arm/Hand1.scale.x == 1:
+			$Torso/Arm/Hand1/Equip.rotation = -angle
+		else:
+			$Torso/Arm/Hand1/Equip.rotation = angle + PI
+		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(angle)+1)/8,1)
