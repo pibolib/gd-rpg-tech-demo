@@ -1,6 +1,5 @@
 extends Node2D
 
-# absolute law: vertical axis is 1/2 horizontal.
 enum CHAR_ACTION {
 	IDLE,
 	WALK,
@@ -22,14 +21,17 @@ enum CHAR_ACTION {
 	DAMAGE_HEAVY, #heavy damge reaction
 	DEATH, #death animation
 }
+var codeanim = [
+	"WALK"
+]
 
 var dir = 0
 var torso_offset = 12
 var move = true
-var state = CHAR_ACTION.IDLE
+var state = "WALK"
 
 func _ready():
-	pass
+	$AnimationHandler.play(state)
 
 func _input(event): #debug rotate pause
 	if event.is_action_pressed("ui_accept"):
@@ -37,7 +39,7 @@ func _input(event): #debug rotate pause
 
 func _process(delta):
 	if move: dir += delta
-	#set base positions. if state is CHAR_ACTION.IDLE, this is the final position for this frame.
+	#set base positions. if state is "IDLE", this is the entire action.
 	$Torso.position.y = -torso_offset
 	set_limb_pos($Legs/Foot1,dir,4,PI/2)
 	set_limb_pos($Legs/Foot2,dir,4,3*PI/2)
@@ -47,6 +49,10 @@ func _process(delta):
 	set_leg_sprite(dir)
 	set_hand_sprite(dir)
 	set_head_sprite(dir)
+	if codeanim.has(state):
+		match state:
+			"WALK":
+				walk($AnimationHandler.current_animation_position)
 
 func set_torso_sprite(angle): #sets torso sprite based on angle
 	var angle_sprites = [
@@ -129,4 +135,17 @@ func trig_pos(angle, dist, mod=0): #returns a vector2 position given an angle an
 	return Vector2(cos(angle+mod)*dist,sin(angle+mod)*dist/2)
 
 func _on_AnimationHandler_animation_finished(anim_name): #this function will be pretty large.
-	pass # Replace with function body.
+	match anim_name:
+		"IDLE":
+			$AnimationHandler.play()
+		"WALK":
+			$AnimationHandler.play()
+
+func walk(time): #this animation lasts for one second and covers a few footsteps.
+	var tangent = Vector2(cos(dir),sin(dir)*0.5)
+	$Legs/Foot1.position += tangent * sin(2*time*PI) * 6
+	$Legs/Foot2.position += tangent * sin(2*time*PI+PI) * 6
+	$Torso/Arm/Hand1.position += tangent * sin(2*time*PI+PI) * 2
+	$Torso/Arm/Hand2.position += tangent * sin(2*time*PI) * 2
+	$Torso/Arm/Hand1.position.y += abs(sin(2*PI*time))
+	$Torso/Arm/Hand2.position.y += abs(sin(2*PI*time+PI))
