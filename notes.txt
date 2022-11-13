@@ -1,0 +1,4 @@
+Axis rules:
+	x scale: 1
+	y scale: 0.5
+	z scale: 1
