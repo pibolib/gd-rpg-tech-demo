@@ -25,10 +25,14 @@ var codeanim = [
 	"WALK"
 ]
 
+export var outline_color = Color(0,0,0)
+
 var dir = 0
 var torso_offset = 12
 var move = true
 var state = "WALK"
+var equip_left = 0
+var equip_right = -1
 
 func _ready():
 	$AnimationHandler.play(state)
@@ -53,11 +57,18 @@ func _process(delta):
 		match state:
 			"WALK":
 				walk($AnimationHandler.current_animation_position)
+	if equip_left != -1:
+		if $Torso/Arm/Hand1.scale.x == 1:
+			$Torso/Arm/Hand1/Equip.rotation = -dir
+		else:
+			$Torso/Arm/Hand1/Equip.rotation = dir + PI
+		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(dir)+1)/8,1)
+	update_z()
 
 func set_torso_sprite(angle): #sets torso sprite based on angle
 	var angle_sprites = [
-		Vector2(0,20),
-		Vector2(7,20)
+		Vector2(0,24),
+		Vector2(8,24)
 	]
 	angle = wrap_angle(angle)
 	var spr = get_sprite_facing_2dir(angle)
@@ -66,45 +77,48 @@ func set_torso_sprite(angle): #sets torso sprite based on angle
 func set_head_sprite(angle):
 	var angle_sprites = [
 		Vector2(0,0),
-		Vector2(8,0),
-		Vector2(16,0),
-		Vector2(24,0)
+		Vector2(10,0),
+		Vector2(20,0),
+		Vector2(30,0)
 	]
 	var angle_sprites2 = [
-		Vector2(0,9),
-		Vector2(13,9),
-		Vector2(26,9),
-		Vector2(39,9)
+		Vector2(0,11),
+		Vector2(15,11),
+		Vector2(30,11),
+		Vector2(45,11)
 	]
 	var spr = get_sprite_facing_4dir(angle)
 	$Torso/Head.region_rect.position = angle_sprites[spr]
 	$Torso/Head/Hair.region_rect.position = angle_sprites2[spr]
-	if spr == 1 or spr == 2:
-		$Torso/Head.offset.x = 1.5
+	if spr == 1 or spr == 2 or spr == 3:
+		$Torso/Head.offset.x = 1
 		$Torso/Head/Hair.offset.x = 0.5
 	else:
-		$Torso/Head.offset.x = 0.5
+		$Torso/Head.offset.x = 0
 		$Torso/Head/Hair.offset.x = -0.5
 
 func set_leg_sprite(angle): #sets leg sprite based on angle
 	var angle_sprites = [
-		Vector2(0,29),
-		Vector2(4,29),
-		Vector2(8,29),
-		Vector2(12,29)
+		Vector2(0,35),
+		Vector2(6,35),
+		Vector2(12,35),
+		Vector2(18,35)
 	]
-	var spr = get_sprite_facing_4dir(angle)
+	var spr = get_sprite_facing_4dir(angle+PI/4)
 	$Legs/Foot1.region_rect.position = angle_sprites[spr]
 	$Legs/Foot2.region_rect.position = angle_sprites[spr]
 
 func set_limb_pos(node, angle, dist, offset): #generically sets position based on angle, dist, and offset, works for any Node2D
 	node.position = trig_pos(angle,dist,offset)
-	node.z_index = node.position.y
 	
 func set_hand_sprite(angle): #sets hand flip based on angle
 	var spr = get_sprite_facing_2dir(angle+PI/2)
-	$Torso/Arm/Hand1.flip_v = spr
-	$Torso/Arm/Hand2.flip_v = spr
+	if spr == 0:
+		$Torso/Arm/Hand1.scale.x = 1
+		$Torso/Arm/Hand2.scale.x = 1
+	else:
+		$Torso/Arm/Hand1.scale.x = -1
+		$Torso/Arm/Hand2.scale.x = -1
 
 func wrap_angle(angle): #returns an angle wrapped between 0 and 2*PI.
 	return wrapf(angle, 0, 2*PI)
@@ -112,11 +126,11 @@ func wrap_angle(angle): #returns an angle wrapped between 0 and 2*PI.
 func get_sprite_facing_4dir(angle): #returns a sprite index for a body part with four directions.
 	var spr
 	angle = wrap_angle(angle)
-	if angle <= PI/4 or angle >= 7*PI/4:
+	if angle <= PI/2:
 		spr = 0
-	elif angle > PI/4 and angle <= 3*PI/4:
+	elif angle > PI/2 and angle <= PI:
 		spr = 1
-	elif angle > 3*PI/4 and angle <= 5*PI/4:
+	elif angle > PI and angle <= 3*PI/2:
 		spr = 2
 	else:
 		spr = 3
@@ -125,7 +139,7 @@ func get_sprite_facing_4dir(angle): #returns a sprite index for a body part with
 func get_sprite_facing_2dir(angle): #returns a sprite index for a body part with two directions.
 	var spr
 	angle = wrap_angle(angle)
-	if angle >= 7*PI/4 or angle <= 3*PI/4:
+	if angle <= PI:
 		spr = 0
 	else:
 		spr = 1
@@ -140,6 +154,13 @@ func _on_AnimationHandler_animation_finished(anim_name): #this function will be 
 			$AnimationHandler.play()
 		"WALK":
 			$AnimationHandler.play()
+
+func update_z(): #updates z_index for all limbs which rotate around main character.
+	var limbs = [
+		$Torso/Arm/Hand1, $Torso/Arm/Hand2, $Legs/Foot1, $Legs/Foot2
+	]
+	for limb in limbs:
+		limb.z_index = limb.position.y
 
 func walk(time): #this animation lasts for one second and covers a few footsteps.
 	var tangent = Vector2(cos(dir),sin(dir)*0.5)
