@@ -111,9 +111,6 @@ offset = Vector2( 0, -1.5 )
 region_enabled = true
 region_rect = Rect2( 0, 35, 6, 5 )
 
-[node name="TempCamera" type="Camera2D" parent="."]
-current = true
-
 [node name="AnimationHandler" type="AnimationPlayer" parent="."]
 anims/ATTACK_ONE_HAND_SWIPE = SubResource( 4 )
 anims/IDLE = SubResource( 1 )

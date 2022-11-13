@@ -1,45 +1,15 @@
-extends Node2D
-
-enum CHAR_ACTION {
-	IDLE,
-	WALK,
-	ATTACK_EMPTY, #bare handed, gloves
-	ATTACK_ONE_HAND_SWIPE, #equip with sword, axe, etc
-	ATTACK_ONE_HAND_STAB, #equip with knife, rapier, etc
-	ATTACK_TWO_HAND_SWIPE, #attack with two swords, axes, etc
-	ATTACK_TWO_HAND_STAB, #attack with two knives, rapiers, etc
-	ATTACK_BOTH_HAND_SWIPE, #attack with greatsword, warhammer, etc
-	ATTACK_BOTH_HAND_STAB, #attack with spear, halberd, etc
-	ATTACK_BOW, #attack using bow or similar drawing weapon
-	ATTACK_ONE_HAND_GUN, #attack using pistol or similar weapon
-	ATTACK_TWO_HAND_GUN, #attack using rifle or similar weapon
-	SPECIAL_EMPTY, #charging special ability
-	SPECIAL_ONE_HAND,
-	SPECIAL_TWO_HAND,
-	SPECIAL_BOTH_HAND,
-	DAMAGE_LIGHT, #light damage reaction
-	DAMAGE_HEAVY, #heavy damge reaction
-	DEATH, #death animation
-}
+extends "res://scene/charactermodel/CharacterModel.gd"
 
 export var outline_color = Color(0,0,0)
 
-var dir = 0
 var torso_offset = 12
-var move = true
-var state = "ATTACK_ONE_HAND_SWIPE"
 var equip_left = 0
 var equip_right = -1
 
 func _ready():
 	$AnimationHandler.play(state)
 
-func _input(event): #debug rotate pause
-	if event.is_action_pressed("ui_accept"):
-		move = !move
-
 func _process(delta):
-	if move: dir += delta
 	#set base positions. if state is "IDLE", this is the entire action.
 	$Torso.position.y = -torso_offset
 	set_limb_pos($Legs/Foot1,dir,4,PI/2)
@@ -162,7 +132,7 @@ func attack_one_hand_swipe(time): #this animation lasts for 0.5 seconds.
 	set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
 	update_equip(dir-time*4+PI/4)
 
-func handle_state():
+func handle_state(): #handles calls for animation state
 	match state:
 		"WALK":
 			walk($AnimationHandler.current_animation_position)
@@ -171,6 +141,8 @@ func handle_state():
 
 func _on_AnimationHandler_animation_finished(anim_name): #this function will be pretty large.
 	match anim_name:
+		"WALK":
+			state = "IDLE"
 		"ATTACK_ONE_HAND_SWIPE":
 			state = "ATTACK_ONE_HAND_SWIPE"
 	$AnimationHandler.play()
