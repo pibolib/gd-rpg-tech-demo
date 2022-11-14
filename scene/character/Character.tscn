@@ -3,9 +3,7 @@
 [ext_resource path="res://scene/character/Character.gd" type="Script" id=1]
 [ext_resource path="res://scene/charactercollision/CharacterCollision.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scene/charactermodel/Humanoid.tscn" type="PackedScene" id=3]
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 16, 20 )
+[ext_resource path="res://scene/entityselect/EntitySelection.tscn" type="PackedScene" id=4]
 
 [node name="Character" type="KinematicBody2D"]
 script = ExtResource( 1 )
@@ -15,8 +13,6 @@ scale = Vector2( 8, 4 )
 
 [node name="Model" parent="." instance=ExtResource( 3 )]
 
-[node name="SelectionBox" type="Area2D" parent="."]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="SelectionBox"]
-position = Vector2( 0, -12 )
-shape = SubResource( 1 )
+[node name="EntitySelection" parent="." instance=ExtResource( 4 )]
+position = Vector2( 0, -13 )
+scale = Vector2( 16, 16 )

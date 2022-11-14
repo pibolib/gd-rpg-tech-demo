@@ -1,11 +1,11 @@
 extends KinematicBody2D
 
 var action = ""
-var speed = 80
+export var speed = 80
+export var gravity = 0
 var vel = Vector2(0,0)
 var target = Vector2(0,0)
 var min_range = 10
-export var gravity = 0
 
 func _ready():
 	target = position
