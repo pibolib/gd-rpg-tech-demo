@@ -29,3 +29,6 @@ func get_current_anim_pos(): #returns current animation time position
 	
 func get_state(): #returns current animation state
 	return state
+
+func set_state(st):
+	state = st

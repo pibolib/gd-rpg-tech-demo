@@ -10,6 +10,7 @@ func _ready():
 	$AnimationHandler.play(state)
 
 func _process(delta):
+	position.y = z
 	#set base positions. if state is "IDLE", this is the entire action.
 	$Torso.position.y = -torso_offset
 	set_limb_pos($Legs/Foot1,dir,4,PI/2)

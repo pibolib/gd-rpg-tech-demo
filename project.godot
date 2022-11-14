@@ -11,7 +11,7 @@ config_version=4
 [application]
 
 config/name="hack16 game"
-run/main_scene="res://scene/charactermodel/Humanoid.tscn"
+run/main_scene="res://scene/world/World.tscn"
 config/icon="res://icon.png"
 
 [display]
