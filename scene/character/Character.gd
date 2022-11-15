@@ -12,15 +12,15 @@ func _ready():
 	$Model.set_gravity(gravity)
 
 func _input(event):
-	if event.is_action_pressed("ui_lc"):
-		model_facing(get_global_mouse_position().angle_to_point(position))
 	if event.is_action_pressed("ui_rc"):
 		navigate(get_global_mouse_position())
 
 func _physics_process(delta):
 	if position.distance_to(target) > min_range:
-		vel = Vector2(cos(position.angle_to_point(target)),sin(position.angle_to_point(target))) * -speed
-		model_facing(PI+position.angle_to_point(target))
+		var target_angle = position.angle_to_point(target)+PI
+		model_facing(lerp_angle($Model.get_dir(),target_angle,4*delta))
+		vel = Vector2(cos($Model.get_dir()),sin($Model.get_dir())) * speed
+		#model_facing(PI+position.angle_to_point(target))
 		$Model.set_state("WALK")
 	else:
 		$Model.set_state("IDLE")
