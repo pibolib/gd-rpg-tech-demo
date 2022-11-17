@@ -16,9 +16,10 @@ func _input(event):
 		navigate(get_global_mouse_position())
 
 func _physics_process(delta):
+	#z_index = position.y
 	if position.distance_to(target) > min_range:
 		var target_angle = position.angle_to_point(target)+PI
-		model_facing(lerp_angle($Model.get_dir(),target_angle,4*delta))
+		model_facing(lerp_angle($Model.get_dir(),target_angle,6*delta))
 		vel = Vector2(cos($Model.get_dir()),sin($Model.get_dir())) * speed
 		#model_facing(PI+position.angle_to_point(target))
 		$Model.set_state("WALK")
@@ -27,9 +28,9 @@ func _physics_process(delta):
 	vel = move_and_slide(vel)
 	vel *= 0.2
 
-func navigate(tar, mr=10):
+func navigate(tar : Vector2, mr : float = 10) -> void:
 	target = tar
 	min_range = mr
 
-func model_facing(angle):
+func model_facing(angle : float) -> void:
 	$Model.set_dir(angle)
