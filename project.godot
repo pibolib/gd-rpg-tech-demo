@@ -17,6 +17,7 @@ config/icon="res://icon.png"
 [autoload]
 
 MouseHandler="*res://scene/singleton/MouseHandler.tscn"
+Data="*res://scene/singleton/Data.tscn"
 
 [display]
 
