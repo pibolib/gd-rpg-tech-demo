@@ -1,14 +1,13 @@
 extends "res://scene/charactermodel/CharacterModel.gd"
 
-export var outline_color = Color(0,0,0)
-
 var torso_offset = 12
-var equip_left = 0
-var equip_right = -1
+var equip_left = {}
+var equip_right = {}
 
 func _ready():
 	$AnimationHandler.play(state)
 
+# warning-ignore:unused_argument
 func _process(delta):
 	position.y = z
 	#set base positions. if state is "IDLE", this is the entire action.
@@ -21,7 +20,7 @@ func _process(delta):
 	set_leg_sprite(dir)
 	set_hand_sprite(dir)
 	set_head_sprite(dir)
-	update_equip(dir)
+	#update_equip(dir)
 	handle_state()
 	update_z()
 
@@ -123,7 +122,7 @@ func walk(time : float) -> void: #this animation lasts for one second and covers
 	$Torso/Arm/Hand2.position += tangent * sin(2*time*PI) * 2
 	$Torso/Arm/Hand1.position.y += abs(sin(2*PI*time))
 	$Torso/Arm/Hand2.position.y += abs(sin(2*PI*time+PI))
-	update_equip(dir)
+	#update_equip(dir)
 
 func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 seconds.
 	var tangent = Vector2(cos(dir),sin(dir)*0.5)
@@ -131,7 +130,7 @@ func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 
 	$Legs/Foot2.position += tangent * sin(1) * 6
 	$Torso/Arm/Hand2.position += tangent * sin(-1-time) * 2
 	set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
-	update_equip(dir-time*4+PI/4)
+	#update_equip(dir-time*4+PI/4)
 
 func handle_state() -> void: #handles calls for animation state
 	match state:
@@ -148,10 +147,22 @@ func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this 
 			state = "ATTACK_ONE_HAND_SWIPE"
 	$AnimationHandler.play()
 
-func update_equip(angle : float, limb : int = 0) -> void: #updates equipment positioning given angle
-	if equip_left != -1 and limb == 0:
-		if $Torso/Arm/Hand1.scale.x == 1:
-			$Torso/Arm/Hand1/Equip.rotation = -angle
-		else:
-			$Torso/Arm/Hand1/Equip.rotation = angle + PI
-		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(angle)+1)/8,1)
+#func update_equip(angle : float, limb : int = 0) -> void: #updates equipment positioning given angle
+#	if equip_left != -1 and limb == 0:
+#		if $Torso/Arm/Hand1.scale.x == 1:
+#			$Torso/Arm/Hand1/Equip.rotation = -angle
+#		else:
+#			$Torso/Arm/Hand1/Equip.rotation = angle + PI
+#		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(angle)+1)/8,1)
+
+func equip_main(item : Dictionary) -> void:
+	$Torso/Arm/Hand1/Equip.queue_free()
+	var new_model = item.DETAILS.MODEL.instance()
+	new_model.set_name("Equip")
+	$Torso/Arm/Hand1.add_child(new_model)
+
+func equip_off(item : Dictionary) -> void:
+	$Torso/Arm/Hand2/Equip.queue_free()
+	var new_model = item.DETAILS.MODEL.instance()
+	new_model.set_name("Equip")
+	$Torso/Arm/Hand2.add_child(new_model)

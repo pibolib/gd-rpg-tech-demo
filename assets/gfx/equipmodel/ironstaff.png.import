@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/bronzesword.png-55ad28af56ccc5d0d96ec552c52d11c9.stex"
+path="res://.import/ironstaff.png-dc35522196c7d0847000e4211bb5445f.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gfx/bronzesword.png"
-dest_files=[ "res://.import/bronzesword.png-55ad28af56ccc5d0d96ec552c52d11c9.stex" ]
+source_file="res://assets/gfx/equipmodel/ironstaff.png"
+dest_files=[ "res://.import/ironstaff.png-dc35522196c7d0847000e4211bb5445f.stex" ]
 
 [params]
 
