@@ -7,7 +7,7 @@ export(PackedScene) var effect_script
 export(String, \"IDLE\",\"WALK\",\"ATTACK_EMPTY\",\"ATTACK_ONE_HAND_SWIPE\",\"ATTACK_ONE_HAND_STAB\",\"ATTACK_TWO_HAND_SWIPE\",\"ATTACK_TWO_HAND_STAB\",\"ATTACK_BOTH_HAND_SWIPE\",\"ATTACK_BOTH_HAND_STAB\",\"ATTACK_BOW\",\"ATTACK_ONE_HAND_GUN\",\"ATTACK_TWO_HAND_GUN\",\"SPECIAL_EMPTY\",\"SPECIAL_ONE_HAND\",\"SPECIAL_TWO_HAND\",\"SPECIAL_BOTH_HAND\",\"DAMAGE_LIGHT\",\"DAMAGE_HEAVY\",\"DEATH\") var animation_type = \"IDLE\"
 export(String) var name = \"\"
 export(int, -1, 999) var target_radius = 10
-export(float, 0.5, 3, 0.5) var action_point_cost = 1
+export(float, 0.5, 3, 0.5) var action_point_cost = 1.0
 export(Texture) var icon
 "
 

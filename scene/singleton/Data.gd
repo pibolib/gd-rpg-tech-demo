@@ -27,20 +27,174 @@ enum CHAR_ACTION {
 	ATTACK_MAGIC,
 }
 
+enum ITEMS {
+	NONE
+}
+
+var action_def = {
+	"NAME": "",
+	"ACTION_TYPE": "",
+	"ACTION_SCRIPT": "",
+	"ACTION_RANGE": 10,
+	"ACTION_AP_COST": 1,
+	"ACTION_POWER": 100,
+	"ACTION_ICON": preload("res://assets/gfx/action/actionicons1.png"),
+	"ACTION_USE_RULES": {}
+}
+
 var action_type = [
 	"IDLE","WALK","ATTACK_EMPTY","ATTACK_ONE_HAND_SWIPE","ATTACK_ONE_HAND_STAB","ATTACK_TWO_HAND_SWIPE","ATTACK_TWO_HAND_STAB","ATTACK_BOTH_HAND_SWIPE","ATTACK_BOTH_HAND_STAB","ATTACK_BOW","ATTACK_ONE_HAND_GUN","ATTACK_TWO_HAND_GUN","SPECIAL_EMPTY","SPECIAL_ONE_HAND","SPECIAL_TWO_HAND","SPECIAL_BOTH_HAND","DAMAGE_LIGHT","DAMAGE_HEAVY","DEATH","ATTACK_MELEE","ATTACK_RANGED","ATTACK_MAGIC"
 ]
 
 var action = [
-	create_action("Attack (Melee Weapon)",action_type[CHAR_ACTION.ATTACK_MELEE],"",10,1,"res://assets/gfx/action/actionicons2.png",{})
+	create_action("Attack I (Melee Weapon)", #name
+	action_type[CHAR_ACTION.ATTACK_MELEE], #anim type
+	"", #script
+	10, #range
+	1, #ap cost
+	"res://assets/gfx/action/actionicons2.png", #icon
+	{}, #usage rules or additional details
+	100), #power 
+	
+	create_action("Attack I (Ranged Weapon)",
+	action_type[CHAR_ACTION.ATTACK_RANGED],
+	"",
+	100,
+	1,
+	"res://assets/gfx/action/actionicons5.png",
+	{},
+	100),
+	
+	create_action("Attack I (Magic Weapon)",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	1,
+	"res://assets/gfx/action/actionicons6.png",
+	{},
+	100),
+	
+	create_action("Fireball I",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons7.png",
+	{},
+	225),
+	
+	create_action("Iceshard I",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons8.png",
+	{},
+	225),
+	
+	create_action("Lightning I",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons9.png",
+	{},
+	225),
+	
+	create_action("Heal I",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons10.png",
+	{},
+	100),
+	
+	create_action("Attack Up I",
+	action_type[CHAR_ACTION.ATTACK_MAGIC],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons11.png",
+	{},
+	0),
+	
+	create_action("Fire Blade I",
+	action_type[CHAR_ACTION.ATTACK_MELEE],
+	"",
+	100,
+	2,
+	"res://assets/gfx/action/actionicons3.png",
+	{},
+	150)
 ]
 
-func create_action(name : String, anim : String, action_script : String, action_range : float, action_cost : float, action_icon : String, action_userule : Dictionary) -> Resource:
-	var my_action = action_res.new()
-	my_action.name = name
-	my_action.effect_script = load(action_script)
-	my_action.target_radius = action_range
-	my_action.action_point_cost = action_cost
-	my_action.icon = load(action_icon)
-	my_action.userule = action_userule
-	return my_action
+var item_def = {
+	"NAME": "",
+	"SPRITE": preload("res://assets/gfx/item/itemicons1.png"),
+	"TYPE": "ITEM",
+	"DETAILS": {}
+}
+
+var items = [
+	create_item_generic("Health Potion", 
+	"res://assets/gfx/item/itemicons2.png", 
+	{"ON_USE":""}),
+	
+	create_item_equip("Bronze Sword",
+	"res://assets/gfx/item/itemicons3.png",
+	"",
+	"ONE",
+	{"PhysAttack":3,"MagicAttack":-3}),
+	
+	create_item_equip("Oaken Bow",
+	"res://assets/gfx/item/itemicons4.png",
+	"",
+	"BOTH",
+	{"PhysAttack":3}),
+	
+	create_item_equip("Iron Staff",
+	"res://assets/gfx/item/itemicons5.png",
+	"",
+	"ONE",
+	{"PhysAttack":-3,"MagicAttack":3}),
+	
+	create_item_equip("Oaken Club",
+	"res://assets/gfx/item/itemicons6.png",
+	"",
+	"ONE",
+	{"PhysAttack":1,"MagicAttack":-10})
+]
+
+func create_action(name : String, anim : String, action_script : String, action_range : float, action_cost : float, action_icon : String, action_userule : Dictionary, action_power : int) -> Dictionary:
+	var _action = action_def.duplicate(true)
+	_action.NAME = name
+	_action.ACTION_TYPE = anim
+	_action.ACTION_SCRIPT = action_script
+	_action.ACTION_RANGE = action_range
+	_action.ACTION_ICON = action_icon
+	_action.ACTION_AP_COST = action_cost
+	_action.ACTION_USE_RULE = action_userule
+	_action.ACTION_POWER = action_power
+	return _action
+
+func create_item_generic(item_name : String, sprite : String, details : Dictionary) -> Dictionary:
+	#name, sprite, details
+	var _item = item_def.duplicate(true)
+	_item.NAME = item_name
+	_item.SPRITE = load(sprite)
+	_item.DETAILS = details
+	_item.TYPE = "ITEM"
+	return _item
+
+func create_item_equip(item_name : String, sprite : String, model : String, equip_type : String, modifiers : Dictionary, requirements : Dictionary = {}) -> Dictionary:
+	#name, sprite, model, equip type, modifiers, requirements
+	var _item = create_item_generic(item_name, sprite, {})
+	_item.DETAILS = {
+		"MODEL": model,
+		"EQUIP_TYPE": equip_type, #OFF, MAIN, BOTH
+		"MODIFIERS": modifiers,
+		"REQUIREMENTS": requirements
+	}
+	_item.TYPE = "EQUIP"
+	return _item
