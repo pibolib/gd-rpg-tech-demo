@@ -33,7 +33,7 @@ var stats = {
 		"MaxAP": 3
 	},
 	"EquippedActions": {
-		"PrimaryAttack": Data.action[Data.ACTION.MELEE1],
+		"PrimaryAttack": Data.action[Data.ACTION.RANGED1],
 		"SecondaryAttack": Data.action[Data.ACTION.NONE],
 		"PrimarySupport": Data.action[Data.ACTION.NONE],
 		"SecondarySupport": Data.action[Data.ACTION.NONE]
@@ -46,6 +46,7 @@ export var speed = 80
 export var gravity = 0
 var vel = Vector2(0,0)
 var target = Vector2(0,0)
+var attacktarget = Vector2(0,0)
 var min_range = 10
 var invul = false
 
@@ -64,6 +65,9 @@ func _physics_process(delta):
 		if action.hash() == Data.action[Data.ACTION.NONE].hash():
 			set_anim("IDLE")
 		elif !actionactive:
+			var target_angle = position.angle_to_point(attacktarget)+PI
+			model_facing(target_angle)
+			dir = $Model.get_dir()
 			create_action(action)
 			actionactive = true
 		target = position
@@ -75,6 +79,8 @@ func navigate(tar : Vector2, moveonly : bool=false) -> void:
 		target = tar
 		if !moveonly:
 			emit_signal("cancel_action")
+		else:
+			min_range = 10
 
 func model_facing(angle : float) -> void:
 	$Model.set_dir(angle)
@@ -92,30 +98,34 @@ func _on_Invulnerability_timeout() -> void:
 	invul = false
 	$Invulnerability.stop()
 
-func action_attack_main(position : Vector2) -> void:
+func action_attack_main(pos : Vector2) -> void:
 	if cancancelaction:
-		navigate(position)
+		navigate(pos)
+		attacktarget = pos
 		min_range = stats.EquippedActions.PrimaryAttack.ACTION_RANGE
 		action = stats.EquippedActions.PrimaryAttack
 		emit_signal("cancel_action")
 
-func action_attack_sub(_position : Vector2) -> void:
+func action_attack_sub(pos : Vector2) -> void:
 	if cancancelaction:
-		navigate(position)
+		navigate(pos)
+		attacktarget = pos
 		min_range = stats.EquippedActions.SecondaryAttack.ACTION_RANGE
 		action = stats.EquippedActions.SecondaryAttack
 		emit_signal("cancel_action")
 
-func action_support_main(_position : Vector2) -> void:
+func action_support_main(pos : Vector2) -> void:
 	if cancancelaction:
-		navigate(position)
+		navigate(pos)
+		attacktarget = pos
 		min_range = stats.EquippedActions.PrimarySupport.ACTION_RANGE
 		action = stats.EquippedActions.PrimarySupport
 		emit_signal("cancel_action")
 
-func action_support_sub(_position : Vector2) -> void:
+func action_support_sub(pos : Vector2) -> void:
 	if cancancelaction:
-		navigate(position)
+		navigate(pos)
+		attacktarget = pos
 		min_range = stats.EquippedActions.SecondarySupport.ACTION_RANGE
 		action = stats.EquippedActions.SecondarySupport
 		emit_signal("cancel_action")
@@ -125,6 +135,7 @@ func create_action(action : Dictionary) -> void:
 	new_action.action_animation = action.ACTION_SCRIPT
 	new_action.userstats = stats
 	new_action.dir = dir
+	new_action.target = attacktarget
 	add_child(new_action)
 
 func set_anim(anim : String) -> void:

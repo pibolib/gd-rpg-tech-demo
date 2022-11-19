@@ -85,7 +85,7 @@ var action = [
 	
 	create_action("Attack I (Ranged Weapon)",
 	action_type[CHAR_ACTION.ATTACK_RANGED],
-	"",
+	"RangedAttack1",
 	100,
 	1,
 	"res://assets/gfx/action/actionicons5.png",

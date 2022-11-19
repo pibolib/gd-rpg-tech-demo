@@ -71,15 +71,6 @@ func set_leg_sprite(angle : float) -> void: #sets leg sprite based on angle
 
 func set_limb_pos(node : Node, angle : float, dist : float, offset : float) -> void: #generically sets position based on angle, dist, and offset, works for any Node2D
 	node.position = trig_pos(angle,dist,offset)
-	
-#func set_hand_sprite(angle : float) -> void: #sets hand flip based on angle
-#	var spr = get_sprite_facing_2dir(angle+PI/2)
-#	if spr == 0:
-#		$Torso/Arm/Hand1.scale.x = 1
-#		$Torso/Arm/Hand2.scale.x = 1
-#	else:
-#		$Torso/Arm/Hand1.scale.x = -1
-#		$Torso/Arm/Hand2.scale.x = -1
 
 func wrap_angle(angle : float) -> float: #returns an angle wrapped between 0 and 2*PI.
 	return wrapf(angle, 0, 2*PI)
@@ -137,12 +128,17 @@ func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 
 		set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
 		update_equip(dir-time*4+PI/4)
 
+func attack_ranged(time : float) -> void:
+	pass
+
 func handle_state() -> void: #handles calls for animation state
 	match state:
 		"WALK":
 			walk($AnimationHandler.current_animation_position)
 		"ATTACK_ONE_HAND_SWIPE":
 			attack_one_hand_swipe($AnimationHandler.current_animation_position)
+		"ATTACK_RANGED":
+			attack_ranged($AnimationHandler.current_animation_position)
 	if state != $AnimationHandler.current_animation:
 		$AnimationHandler.play(state)
 
@@ -152,6 +148,8 @@ func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this 
 			state = "IDLE"
 		"ATTACK_ONE_HAND_SWIPE":
 			state = "ATTACK_ONE_HAND_SWIPE"
+		"ATTACK_RANGED":
+			state = "ATTACK_RANGED"
 	$AnimationHandler.play()
 
 func update_equip(dir : float, limb : int=0) -> void: #updates equipment positioning and arm positioning given direction
