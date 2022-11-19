@@ -1,7 +1,13 @@
 extends KinematicBody2D
+class_name Character
+
+var action_scene = preload("res://scene/action/Action.tscn")
 
 #gameplay variables **NOT STATS**
 export var team = 0 #0: player, 1: enemy, 2: neutral (unimplemented)
+var dir = 0
+
+signal cancel_action
 
 var stats = {
 	"CharAttributes": {
@@ -13,8 +19,8 @@ var stats = {
 		"Dexterity": 10
 	},
 	"EquipAttributes": {
-		"Main": Data.items[Data.ITEMS.NONE],
-		"Off": Data.items[Data.ITEMS.NONE]
+		"Main": {},
+		"Off": {}
 	},
 	"CombatStats": {
 		"PhysAttack": 10,
@@ -22,14 +28,25 @@ var stats = {
 		"PhysDefense": 10,
 		"MagicDefense": 10,
 		"HP": 100,
-		"MaxHP": 100
+		"MaxHP": 100,
+		"AP": 3,
+		"MaxAP": 3
 	},
+	"EquippedActions": {
+		"PrimaryAttack": Data.action[Data.ACTION.RANGED1],
+		"SecondaryAttack": Data.action[Data.ACTION.NONE],
+		"PrimarySupport": Data.action[Data.ACTION.NONE],
+		"SecondarySupport": Data.action[Data.ACTION.NONE]
+	}
 } #generic stats, get these from somewhere else (copied or referenced)
-var action = ""
+var action = Data.action[Data.ACTION.NONE]
+var cancancelaction = true
+var actionactive = false
 export var speed = 80
 export var gravity = 0
 var vel = Vector2(0,0)
 var target = Vector2(0,0)
+var attacktarget = Vector2(0,0)
 var min_range = 10
 var invul = false
 
@@ -37,25 +54,36 @@ func _ready():
 	target = position
 	$Model.set_gravity(gravity)
 
-func _input(event):
-	if event.is_action_pressed("ui_rc"):
-		navigate(get_global_mouse_position())
-
 func _physics_process(delta):
-	#z_index = position.y
 	if position.distance_to(target) > min_range:
 		var target_angle = position.angle_to_point(target)+PI
-		model_facing(lerp_angle($Model.get_dir(),target_angle,6*delta))
+		model_facing(lerp_angle($Model.get_dir(),target_angle,8*delta))
+		dir = $Model.get_dir()
 		vel = Vector2(cos($Model.get_dir()),sin($Model.get_dir())) * speed
-		#model_facing(PI+position.angle_to_point(target))
-		$Model.set_state("WALK")
+		set_anim("WALK")
+		if cancancelaction and actionactive:
+			emit_signal("cancel_action")
+			action = Data.action[Data.ACTION.NONE]
 	else:
-		$Model.set_state("IDLE")
+		if action.hash() == Data.action[Data.ACTION.NONE].hash():
+			set_anim("IDLE")
+		elif !actionactive:
+			var target_angle = position.angle_to_point(attacktarget)+PI
+			model_facing(target_angle)
+			dir = $Model.get_dir()
+			create_action(action)
+			actionactive = true
+		target = position
+		vel = Vector2(0,0)
 	vel = move_and_slide(vel)
 
-func navigate(tar : Vector2, mr : float = 5) -> void:
-	target = tar
-	min_range = mr
+func navigate(tar : Vector2, moveonly : bool=false) -> void:
+	if cancancelaction:
+		target = tar
+		if !moveonly:
+			emit_signal("cancel_action")
+		else:
+			min_range = 10
 
 func model_facing(angle : float) -> void:
 	$Model.set_dir(angle)
@@ -72,3 +100,47 @@ func start_invul() -> void:
 func _on_Invulnerability_timeout() -> void:
 	invul = false
 	$Invulnerability.stop()
+
+func action_attack_main(pos : Vector2) -> void:
+	if cancancelaction:
+		navigate(pos)
+		attacktarget = pos
+		min_range = stats.EquippedActions.PrimaryAttack.ACTION_RANGE
+		action = stats.EquippedActions.PrimaryAttack
+		emit_signal("cancel_action")
+
+func action_attack_sub(pos : Vector2) -> void:
+	if cancancelaction:
+		navigate(pos)
+		attacktarget = pos
+		min_range = stats.EquippedActions.SecondaryAttack.ACTION_RANGE
+		action = stats.EquippedActions.SecondaryAttack
+		emit_signal("cancel_action")
+
+func action_support_main(pos : Vector2) -> void:
+	if cancancelaction:
+		navigate(pos)
+		attacktarget = pos
+		min_range = stats.EquippedActions.PrimarySupport.ACTION_RANGE
+		action = stats.EquippedActions.PrimarySupport
+		emit_signal("cancel_action")
+
+func action_support_sub(pos : Vector2) -> void:
+	if cancancelaction:
+		navigate(pos)
+		attacktarget = pos
+		min_range = stats.EquippedActions.SecondarySupport.ACTION_RANGE
+		action = stats.EquippedActions.SecondarySupport
+		emit_signal("cancel_action")
+
+func create_action(act : Dictionary) -> void:
+	var new_action = action_scene.instance()
+	new_action.action_animation = act.ACTION_SCRIPT
+	new_action.userstats = stats
+	new_action.dir = dir
+	new_action.target = attacktarget
+	new_action.action = act
+	add_child(new_action)
+
+func set_anim(anim : String) -> void:
+	$Model.set_state(anim)

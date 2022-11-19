@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scene/action/Hurtbox.gd" type="Script" id=1]
+[ext_resource path="res://scene/action/ProjectileHitbox.gd" type="Script" id=2]
+[ext_resource path="res://scene/charactercollision/CharacterCollision.tscn" type="PackedScene" id=3]
+[ext_resource path="res://assets/shader/color_outline.tres" type="Material" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 1, 0.5 )
+
+[node name="Projectile" type="KinematicBody2D"]
+z_index = 10
+script = ExtResource( 2 )
+
+[node name="CollisionShape2D" parent="." instance=ExtResource( 3 )]
+scale = Vector2( 4, 2 )
+disabled = true
+
+[node name="Sprite" type="Sprite" parent="."]
+material = ExtResource( 4 )
+
+[node name="Hurtbox" type="Area2D" parent="."]
+scale = Vector2( 4, 2 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource( 1 )
+
+[node name="Timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
