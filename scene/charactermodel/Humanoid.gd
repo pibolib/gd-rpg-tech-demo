@@ -136,6 +136,15 @@ func attack_ranged(time : float) -> void:
 		set_limb_pos($Torso/Arm/Hand2,dir,7-11*time,0)
 		update_equip(dir)
 
+func attack_magic(time : float) -> void:
+	if time > 0.1:
+		var tangent = Vector2(cos(dir),sin(dir)*0.5)
+		$Legs/Foot1.position += tangent * sin(-1) * 6
+		$Legs/Foot2.position += tangent * sin(1) * 6
+		set_limb_pos($Torso/Arm/Hand1,dir-PI/16,10,PI/2)
+		$Torso/Arm/Hand1.position.y -= 3
+		update_equip(dir)
+		
 func handle_state() -> void: #handles calls for animation state
 	match state:
 		"WALK":
@@ -144,6 +153,8 @@ func handle_state() -> void: #handles calls for animation state
 			attack_one_hand_swipe($AnimationHandler.current_animation_position)
 		"ATTACK_RANGED":
 			attack_ranged($AnimationHandler.current_animation_position)
+		"ATTACK_MAGIC":
+			attack_magic($AnimationHandler.current_animation_position)
 	if state != $AnimationHandler.current_animation:
 		$AnimationHandler.play(state)
 
@@ -155,6 +166,8 @@ func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this 
 			state = "ATTACK_ONE_HAND_SWIPE"
 		"ATTACK_RANGED":
 			state = "ATTACK_RANGED"
+		"ATTACK_MAGIC":
+			state = "ATTACK_MAGIC"
 	$AnimationHandler.play()
 
 func update_equip(dir : float, limb : int=0) -> void: #updates equipment positioning and arm positioning given direction

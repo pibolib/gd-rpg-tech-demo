@@ -203,7 +203,7 @@ func create_action(name : String, anim : String, action_script : String, action_
 	_action.ACTION_TYPE = anim
 	_action.ACTION_SCRIPT = action_script
 	_action.ACTION_RANGE = action_range
-	_action.ACTION_ICON = action_icon
+	_action.ACTION_ICON = load(action_icon)
 	_action.ACTION_AP_COST = action_cost
 	_action.ACTION_USE_RULE = action_userule
 	_action.ACTION_POWER = action_power

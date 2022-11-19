@@ -33,7 +33,7 @@ var stats = {
 		"MaxAP": 3
 	},
 	"EquippedActions": {
-		"PrimaryAttack": Data.action[Data.ACTION.MAGIC1],
+		"PrimaryAttack": Data.action[Data.ACTION.RANGED1],
 		"SecondaryAttack": Data.action[Data.ACTION.NONE],
 		"PrimarySupport": Data.action[Data.ACTION.NONE],
 		"SecondarySupport": Data.action[Data.ACTION.NONE]
@@ -139,6 +139,7 @@ func create_action(act : Dictionary) -> void:
 	new_action.userstats = stats
 	new_action.dir = dir
 	new_action.target = attacktarget
+	new_action.action = act
 	add_child(new_action)
 
 func set_anim(anim : String) -> void:

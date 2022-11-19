@@ -6,7 +6,8 @@ func hand_scale(dir : float, anim : String) -> Vector2:
 		"WALK", "IDLE":
 			scl = .hand_scale(dir, anim)
 		"ATTACK_MAGIC":
-			pass
+			scl = .hand_scale(dir, anim)
+	scl.x *= -1
 	return scl
 
 func sprite_orientation(_dir : float, anim : String) -> void:
