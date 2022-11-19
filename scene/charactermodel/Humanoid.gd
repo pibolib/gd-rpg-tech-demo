@@ -22,6 +22,7 @@ func _process(delta):
 	set_torso_sprite(dir)
 	set_leg_sprite(dir)
 	set_head_sprite(dir)
+	update_equip(dir)
 	handle_state()
 	update_z()
 
@@ -128,12 +129,13 @@ func walk(time : float) -> void: #this animation lasts for one second and covers
 	update_equip(dir)
 
 func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 seconds.
-	var tangent = Vector2(cos(dir),sin(dir)*0.5)
-	$Legs/Foot1.position += tangent * sin(-1) * 6
-	$Legs/Foot2.position += tangent * sin(1) * 6
-	$Torso/Arm/Hand2.position += tangent * sin(-1-time) * 2
-	set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
-	update_equip(dir-time*4+PI/4)
+	if time > 0.1:
+		var tangent = Vector2(cos(dir),sin(dir)*0.5)
+		$Legs/Foot1.position += tangent * sin(-1) * 6
+		$Legs/Foot2.position += tangent * sin(1) * 6
+		$Torso/Arm/Hand2.position += tangent * sin(-1-time) * 2
+		set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
+		update_equip(dir-time*4+PI/4)
 
 func handle_state() -> void: #handles calls for animation state
 	match state:
@@ -141,6 +143,8 @@ func handle_state() -> void: #handles calls for animation state
 			walk($AnimationHandler.current_animation_position)
 		"ATTACK_ONE_HAND_SWIPE":
 			attack_one_hand_swipe($AnimationHandler.current_animation_position)
+	if state != $AnimationHandler.current_animation:
+		$AnimationHandler.play(state)
 
 func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this function will be pretty large.
 	match anim_name:
@@ -150,13 +154,15 @@ func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this 
 			state = "ATTACK_ONE_HAND_SWIPE"
 	$AnimationHandler.play()
 
-func update_equip(dir : float) -> void: #updates equipment positioning and arm positioning given direction
-	equip_left.position = $Torso/Arm/Hand1.position
-	equip_right.position = $Torso/Arm/Hand2.position
-	$Torso/Arm/Hand1.scale = equip_left.hand_scale(dir, state)
-	$Torso/Arm/Hand2.scale = equip_right.hand_scale(dir, state)
-	equip_left.sprite_orientation(dir, state)
-	equip_right.sprite_orientation(dir, state)
+func update_equip(dir : float, limb : int=0) -> void: #updates equipment positioning and arm positioning given direction
+	if limb == 0:
+		equip_left.position = $Torso/Arm/Hand1.position
+		equip_left.sprite_orientation(dir, state)
+		$Torso/Arm/Hand1.scale = equip_left.hand_scale(dir, state)
+	else:
+		equip_right.position = $Torso/Arm/Hand2.position
+		equip_right.sprite_orientation(dir, state)
+		$Torso/Arm/Hand2.scale = equip_right.hand_scale(dir, state)
 
 func equip_main(item : Dictionary) -> Node:
 	equip_left.queue_free()

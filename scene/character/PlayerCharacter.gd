@@ -7,10 +7,11 @@ func _ready():
 	add_to_group("Player")
 	$Model.equip_left = $Model.equip_main(Data.items[Data.ITEM.BRONZE_SWORD])
 
-func _input(event):
-	if selected:
-		if event.is_action_pressed("ui_rc"):
-			navigate(get_global_mouse_position())
+func _unhandled_input(event):
+	if event.is_action_pressed("ui_rc") and selected:
+		navigate(get_global_mouse_position(), true)
+	if event.is_action_pressed("ui_lc") and selected:
+		deselect()
 
 func deselect() -> void:
 	selected = false

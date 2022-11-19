@@ -76,7 +76,7 @@ var action = [
 	
 	create_action("Attack I (Melee Weapon)", #name
 	action_type[CHAR_ACTION.ATTACK_MELEE], #anim type
-	"", #script
+	"MeleeAttack1", #script
 	10, #range
 	1, #ap cost
 	"res://assets/gfx/action/actionicons2.png", #icon

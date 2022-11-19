@@ -17,5 +17,5 @@ func _on_EntitySelection_input_event(_viewport, event, _shape_idx):
 				get_tree().call_group("Player","action_support_sub",position)
 	if event.is_action_pressed("ui_lc"):
 		if team == 0:
-			get_tree().call_group("Player","deselect")
+			get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "Player","deselect")
 			get_parent().select()

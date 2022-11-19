@@ -7,7 +7,7 @@
 
 [sub_resource type="Animation" id=4]
 resource_name = "ATTACK_ONE_HAND_SWIPE"
-length = 0.5
+length = 0.6
 
 [sub_resource type="Animation" id=1]
 resource_name = "IDLE"
