@@ -28,11 +28,25 @@ enum CHAR_ACTION {
 }
 
 enum ITEM {
+	NONE,
 	HEALING_POTION,
 	BRONZE_SWORD,
 	OAKEN_BOW,
 	IRON_STAFF,
 	OAKEN_CLUB
+}
+
+enum ACTION {
+	NONE,
+	MELEE1,
+	RANGED1,
+	MAGIC1,
+	FIRE1,
+	ICE1,
+	THUNDER1,
+	HEAL1,
+	ATKUP1,
+	FIREMELEE1
 }
 
 var action_def = {
@@ -51,6 +65,15 @@ var action_type = [
 ]
 
 var action = [
+	create_action("???",
+	action_type[CHAR_ACTION.IDLE],
+	"",
+	10,
+	1,
+	"res://assets/gfx/action/actionicons1.png",
+	{},
+	-1),
+	
 	create_action("Attack I (Melee Weapon)", #name
 	action_type[CHAR_ACTION.ATTACK_MELEE], #anim type
 	"", #script
@@ -141,6 +164,10 @@ var item_def = {
 }
 
 var items = [
+	create_item_generic("???",
+	"res://assets/gfx/item/itemicons1.png",
+	{}),
+	
 	create_item_generic("Health Potion", 
 	"res://assets/gfx/item/itemicons2.png", 
 	{"ON_USE":""}),

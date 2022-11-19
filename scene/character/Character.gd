@@ -1,4 +1,5 @@
 extends KinematicBody2D
+class_name Character
 
 #gameplay variables **NOT STATS**
 export var team = 0 #0: player, 1: enemy, 2: neutral (unimplemented)
@@ -24,8 +25,14 @@ var stats = {
 		"HP": 100,
 		"MaxHP": 100
 	},
+	"EquippedActions": {
+		"PrimaryAttack": Data.action[Data.ACTION.NONE],
+		"SecondaryAttack": Data.action[Data.ACTION.NONE],
+		"PrimarySupport": Data.action[Data.ACTION.NONE],
+		"SecondarySupport": Data.action[Data.ACTION.NONE]
+	}
 } #generic stats, get these from somewhere else (copied or referenced)
-var action = ""
+var action = Data.action[Data.ACTION.NONE]
 export var speed = 80
 export var gravity = 0
 var vel = Vector2(0,0)
@@ -73,3 +80,23 @@ func start_invul() -> void:
 func _on_Invulnerability_timeout() -> void:
 	invul = false
 	$Invulnerability.stop()
+
+func action_attack_main(position : Vector2) -> void:
+	navigate(position)
+	min_range = stats.EquippedActions.PrimaryAttack.ACTION_RANGE
+	action = stats.EquippedActions.PrimaryAttack
+
+func action_attack_sub(_position : Vector2) -> void:
+	navigate(position)
+	min_range = stats.EquippedActions.SecondaryAttack.ACTION_RANGE
+	action = stats.EquippedActions.SecondaryAttack
+
+func action_support_main(_position : Vector2) -> void:
+	navigate(position)
+	min_range = stats.EquippedActions.PrimarySupport.ACTION_RANGE
+	action = stats.EquippedActions.PrimarySupport
+
+func action_support_sub(_position : Vector2) -> void:
+	navigate(position)
+	min_range = stats.EquippedActions.SecondarySupport.ACTION_RANGE
+	action = stats.EquippedActions.SecondarySupport
