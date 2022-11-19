@@ -6,7 +6,6 @@ onready var equip_right = $Torso/Arm/Equip2
 
 func _ready():
 	$AnimationHandler.play(state)
-	equip_left = equip_main(Data.items[Data.ITEM.BRONZE_SWORD])
 
 # warning-ignore:unused_argument
 func _process(delta):
@@ -129,7 +128,13 @@ func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 
 		update_equip(dir-time*4+PI/4)
 
 func attack_ranged(time : float) -> void:
-	pass
+	if time > 0.1:
+		var tangent = Vector2(cos(dir),sin(dir)*0.5)
+		$Legs/Foot1.position += tangent * sin(-1) * 6
+		$Legs/Foot2.position += tangent * sin(1) * 6
+		set_limb_pos($Torso/Arm/Hand1,dir,8,0)
+		set_limb_pos($Torso/Arm/Hand2,dir,7-11*time,0)
+		update_equip(dir)
 
 func handle_state() -> void: #handles calls for animation state
 	match state:

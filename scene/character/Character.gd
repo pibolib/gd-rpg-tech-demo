@@ -33,7 +33,7 @@ var stats = {
 		"MaxAP": 3
 	},
 	"EquippedActions": {
-		"PrimaryAttack": Data.action[Data.ACTION.RANGED1],
+		"PrimaryAttack": Data.action[Data.ACTION.MAGIC1],
 		"SecondaryAttack": Data.action[Data.ACTION.NONE],
 		"PrimarySupport": Data.action[Data.ACTION.NONE],
 		"SecondarySupport": Data.action[Data.ACTION.NONE]
@@ -61,6 +61,9 @@ func _physics_process(delta):
 		dir = $Model.get_dir()
 		vel = Vector2(cos($Model.get_dir()),sin($Model.get_dir())) * speed
 		set_anim("WALK")
+		if cancancelaction and actionactive:
+			emit_signal("cancel_action")
+			action = Data.action[Data.ACTION.NONE]
 	else:
 		if action.hash() == Data.action[Data.ACTION.NONE].hash():
 			set_anim("IDLE")
@@ -130,9 +133,9 @@ func action_support_sub(pos : Vector2) -> void:
 		action = stats.EquippedActions.SecondarySupport
 		emit_signal("cancel_action")
 
-func create_action(action : Dictionary) -> void:
+func create_action(act : Dictionary) -> void:
 	var new_action = action_scene.instance()
-	new_action.action_animation = action.ACTION_SCRIPT
+	new_action.action_animation = act.ACTION_SCRIPT
 	new_action.userstats = stats
 	new_action.dir = dir
 	new_action.target = attacktarget

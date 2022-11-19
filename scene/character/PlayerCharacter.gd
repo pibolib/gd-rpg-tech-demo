@@ -5,7 +5,7 @@ var selected = false
 
 func _ready():
 	add_to_group("Player")
-	$Model.equip_left = $Model.equip_main(Data.items[Data.ITEM.OAKEN_BOW])
+	$Model.equip_left = $Model.equip_main(Data.items[Data.ITEM.IRON_STAFF])
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_rc") and selected:

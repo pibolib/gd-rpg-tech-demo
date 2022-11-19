@@ -94,7 +94,7 @@ var action = [
 	
 	create_action("Attack I (Magic Weapon)",
 	action_type[CHAR_ACTION.ATTACK_MAGIC],
-	"",
+	"MagicAttack1",
 	100,
 	1,
 	"res://assets/gfx/action/actionicons6.png",

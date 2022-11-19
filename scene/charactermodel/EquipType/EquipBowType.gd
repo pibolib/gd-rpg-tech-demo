@@ -14,8 +14,16 @@ func hand_scale(dir : float, anim : String) -> Vector2:
 	match anim:
 		"WALK", "IDLE":
 			scl = .hand_scale(dir, anim)
-		"ATTACK_BOW":
-			pass
+		"ATTACK_RANGED":
+			match get_sprite_facing_4dir(dir+PI/4):
+				0:
+					scl = Vector2(1,-1)
+				1:
+					scl = Vector2(1,1)
+				2:
+					scl = Vector2(-1,-1)
+				3:
+					scl = Vector2(-1,1)
 	return scl
 
 func sprite_orientation(dir : float, anim : String) -> void:
@@ -28,6 +36,9 @@ func sprite_orientation(dir : float, anim : String) -> void:
 			else:
 				rotation = dir + PI/2
 			anim_frame = anim_frame % 2
+		"ATTACK_RANGED":
+			anim_frame = get_sprite_facing_4dir(dir+PI/4)
+			rotation = 0
 	offset = offsets[anim_frame]
 	region_rect.position = frames[anim_frame]
 	
