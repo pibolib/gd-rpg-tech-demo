@@ -1,8 +1,11 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://scene/charactermodel/EquipGeneric.gd" type="Script" id=1]
 [ext_resource path="res://assets/shader/color_outline.tres" type="Material" id=2]
+[ext_resource path="res://assets/gfx/equipmodel/bronzesword.png" type="Texture" id=3]
 
-[node name="EquipGeneric" type="Sprite"]
+[node name="BronzeSword" type="Sprite"]
 material = ExtResource( 2 )
+texture = ExtResource( 3 )
+offset = Vector2( 11, -0.5 )
 script = ExtResource( 1 )

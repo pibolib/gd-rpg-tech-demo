@@ -1,11 +1,12 @@
 extends "res://scene/charactermodel/CharacterModel.gd"
 
 var torso_offset = 12
-var equip_left = {}
-var equip_right = {}
+onready var equip_left = $Torso/Arm/Equip1
+onready var equip_right = $Torso/Arm/Equip2
 
 func _ready():
 	$AnimationHandler.play(state)
+	equip_left = equip_main(Data.items[Data.ITEM.BRONZE_SWORD])
 
 # warning-ignore:unused_argument
 func _process(delta):
@@ -15,12 +16,12 @@ func _process(delta):
 	set_limb_pos($Legs/Foot1,dir,4,PI/2)
 	set_limb_pos($Legs/Foot2,dir,4,3*PI/2)
 	set_limb_pos($Torso/Arm/Hand1,dir,6,PI/2)
+	set_limb_pos(equip_left,dir,6,PI/2)
 	set_limb_pos($Torso/Arm/Hand2,dir,6,3*PI/2)
+	set_limb_pos(equip_right,dir,6,3*PI/2)
 	set_torso_sprite(dir)
 	set_leg_sprite(dir)
-	set_hand_sprite(dir)
 	set_head_sprite(dir)
-	#update_equip(dir)
 	handle_state()
 	update_z()
 
@@ -70,14 +71,14 @@ func set_leg_sprite(angle : float) -> void: #sets leg sprite based on angle
 func set_limb_pos(node : Node, angle : float, dist : float, offset : float) -> void: #generically sets position based on angle, dist, and offset, works for any Node2D
 	node.position = trig_pos(angle,dist,offset)
 	
-func set_hand_sprite(angle : float) -> void: #sets hand flip based on angle
-	var spr = get_sprite_facing_2dir(angle+PI/2)
-	if spr == 0:
-		$Torso/Arm/Hand1.scale.x = 1
-		$Torso/Arm/Hand2.scale.x = 1
-	else:
-		$Torso/Arm/Hand1.scale.x = -1
-		$Torso/Arm/Hand2.scale.x = -1
+#func set_hand_sprite(angle : float) -> void: #sets hand flip based on angle
+#	var spr = get_sprite_facing_2dir(angle+PI/2)
+#	if spr == 0:
+#		$Torso/Arm/Hand1.scale.x = 1
+#		$Torso/Arm/Hand2.scale.x = 1
+#	else:
+#		$Torso/Arm/Hand1.scale.x = -1
+#		$Torso/Arm/Hand2.scale.x = -1
 
 func wrap_angle(angle : float) -> float: #returns an angle wrapped between 0 and 2*PI.
 	return wrapf(angle, 0, 2*PI)
@@ -109,10 +110,12 @@ func trig_pos(angle : float, dist : float, mod : float = 0) -> Vector2: #returns
 
 func update_z() -> void: #updates z_index for all limbs which rotate around main character.
 	var limbs = [
-		$Torso/Arm/Hand1, $Torso/Arm/Hand2, $Legs/Foot1, $Legs/Foot2
+		$Torso/Arm/Hand1, $Torso/Arm/Hand2, $Legs/Foot1, $Legs/Foot2, equip_left, equip_right
 	]
 	for limb in limbs:
 		limb.z_index = limb.position.y
+	equip_left.z_index -= 1
+	equip_right.z_index -= 1
 
 func walk(time : float) -> void: #this animation lasts for one second and covers a few footsteps.
 	var tangent = Vector2(cos(dir),sin(dir)*0.5)
@@ -122,7 +125,7 @@ func walk(time : float) -> void: #this animation lasts for one second and covers
 	$Torso/Arm/Hand2.position += tangent * sin(2*time*PI) * 2
 	$Torso/Arm/Hand1.position.y += abs(sin(2*PI*time))
 	$Torso/Arm/Hand2.position.y += abs(sin(2*PI*time+PI))
-	#update_equip(dir)
+	update_equip(dir)
 
 func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 seconds.
 	var tangent = Vector2(cos(dir),sin(dir)*0.5)
@@ -130,7 +133,7 @@ func attack_one_hand_swipe(time : float) -> void: #this animation lasts for 0.5 
 	$Legs/Foot2.position += tangent * sin(1) * 6
 	$Torso/Arm/Hand2.position += tangent * sin(-1-time) * 2
 	set_limb_pos($Torso/Arm/Hand1,dir-time*8,8,PI/2)
-	#update_equip(dir-time*4+PI/4)
+	update_equip(dir-time*4+PI/4)
 
 func handle_state() -> void: #handles calls for animation state
 	match state:
@@ -147,22 +150,24 @@ func _on_AnimationHandler_animation_finished(anim_name : String) -> void: #this 
 			state = "ATTACK_ONE_HAND_SWIPE"
 	$AnimationHandler.play()
 
-#func update_equip(angle : float, limb : int = 0) -> void: #updates equipment positioning given angle
-#	if equip_left != -1 and limb == 0:
-#		if $Torso/Arm/Hand1.scale.x == 1:
-#			$Torso/Arm/Hand1/Equip.rotation = -angle
-#		else:
-#			$Torso/Arm/Hand1/Equip.rotation = angle + PI
-#		$Torso/Arm/Hand1/Equip.scale = Vector2(1-(cos(angle)+1)/8,1)
+func update_equip(dir : float) -> void: #updates equipment positioning and arm positioning given direction
+	equip_left.position = $Torso/Arm/Hand1.position
+	equip_right.position = $Torso/Arm/Hand2.position
+	$Torso/Arm/Hand1.scale = equip_left.hand_scale(dir, state)
+	$Torso/Arm/Hand2.scale = equip_right.hand_scale(dir, state)
+	equip_left.sprite_orientation(dir, state)
+	equip_right.sprite_orientation(dir, state)
 
-func equip_main(item : Dictionary) -> void:
-	$Torso/Arm/Hand1/Equip.queue_free()
+func equip_main(item : Dictionary) -> Node:
+	equip_left.queue_free()
 	var new_model = item.DETAILS.MODEL.instance()
-	new_model.set_name("Equip")
-	$Torso/Arm/Hand1.add_child(new_model)
+	new_model.set_name("Equip1")
+	$Torso/Arm.add_child(new_model)
+	return new_model
 
-func equip_off(item : Dictionary) -> void:
-	$Torso/Arm/Hand2/Equip.queue_free()
+func equip_off(item : Dictionary) -> Node:
+	equip_right.queue_free()
 	var new_model = item.DETAILS.MODEL.instance()
-	new_model.set_name("Equip")
-	$Torso/Arm/Hand2.add_child(new_model)
+	new_model.set_name("Equip2")
+	$Torso/Arm.add_child(new_model)
+	return new_model

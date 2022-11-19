@@ -13,8 +13,10 @@ func get_state() -> String: #returns current animation state
 func set_state(st : String) -> void:
 	state = st
 
-func equip_main(item : Dictionary) -> void: #generic equip function
-	pass
+func equip_main(_item : Dictionary) -> Node: #generic equip function
+	var node = Node.instance()
+	return node
 
-func equip_off(item : Dictionary) -> void: #generic equip function
-	pass
+func equip_off(_item : Dictionary) -> Node: #generic equip function
+	var node = Node.instance()
+	return node

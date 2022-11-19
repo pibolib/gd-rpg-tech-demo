@@ -1,0 +1,11 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scene/charactermodel/EquipType/EquipStaffType.gd" type="Script" id=1]
+[ext_resource path="res://assets/shader/color_outline.tres" type="Material" id=2]
+[ext_resource path="res://assets/gfx/equipmodel/ironstaff.png" type="Texture" id=3]
+
+[node name="IronStaff" type="Sprite"]
+material = ExtResource( 2 )
+texture = ExtResource( 3 )
+offset = Vector2( 6, 0 )
+script = ExtResource( 1 )

@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://scene/charactermodel/EquipType/EquipBowType.gd" type="Script" id=1]
+[ext_resource path="res://assets/shader/color_outline.tres" type="Material" id=2]
+[ext_resource path="res://assets/gfx/equipmodel/woodenbow.png" type="Texture" id=3]
+
+[node name="OakenBow" type="Sprite"]
+material = ExtResource( 2 )
+texture = ExtResource( 3 )
+offset = Vector2( -2, 0 )
+region_enabled = true
+region_rect = Rect2( 1, 0, 8, 18 )
+script = ExtResource( 1 )
+frames = PoolVector2Array( 1, 0, 9, 0, 17, 0, 25, 0 )
+offsets = PoolVector2Array( -2, 0, 0, 0, 2, 0, 0, 0 )
+frame_size = Vector2( 8, 18 )

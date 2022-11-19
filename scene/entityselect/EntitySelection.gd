@@ -1,3 +1,3 @@
 extends Area2D
 
-export(int, "PLAYER", "ENEMY") var allegiance = 0
+export(int, "PLAYER", "ENEMY") var team = 0

@@ -27,8 +27,12 @@ enum CHAR_ACTION {
 	ATTACK_MAGIC,
 }
 
-enum ITEMS {
-	NONE
+enum ITEM {
+	HEALING_POTION,
+	BRONZE_SWORD,
+	OAKEN_BOW,
+	IRON_STAFF,
+	OAKEN_CLUB
 }
 
 var action_def = {
@@ -143,25 +147,25 @@ var items = [
 	
 	create_item_equip("Bronze Sword",
 	"res://assets/gfx/item/itemicons3.png",
-	"",
+	"res://scene/charactermodel/EquipType/BronzeSword.tscn",
 	"ONE",
 	{"PhysAttack":3,"MagicAttack":-3}),
 	
 	create_item_equip("Oaken Bow",
 	"res://assets/gfx/item/itemicons4.png",
-	"",
+	"res://scene/charactermodel/EquipType/OakenBow.tscn",
 	"BOTH",
 	{"PhysAttack":3}),
 	
 	create_item_equip("Iron Staff",
 	"res://assets/gfx/item/itemicons5.png",
-	"",
+	"res://scene/charactermodel/EquipType/IronStaff.tscn",
 	"ONE",
 	{"PhysAttack":-3,"MagicAttack":3}),
 	
 	create_item_equip("Oaken Club",
 	"res://assets/gfx/item/itemicons6.png",
-	"",
+	"res://scene/charactermodel/EquipType/WoodenClub.tscn",
 	"ONE",
 	{"PhysAttack":1,"MagicAttack":-10})
 ]
@@ -191,7 +195,7 @@ func create_item_equip(item_name : String, sprite : String, model : String, equi
 	#name, sprite, model, equip type, modifiers, requirements
 	var _item = create_item_generic(item_name, sprite, {})
 	_item.DETAILS = {
-		"MODEL": model,
+		"MODEL": load(model),
 		"EQUIP_TYPE": equip_type, #OFF, MAIN, BOTH
 		"MODIFIERS": modifiers,
 		"REQUIREMENTS": requirements

@@ -2,7 +2,7 @@
 
 [ext_resource path="res://assets/gfx/humanoidmodelbase.png" type="Texture" id=1]
 [ext_resource path="res://scene/charactermodel/Humanoid.gd" type="Script" id=2]
-[ext_resource path="res://assets/shader/color_outline.tres" type="Material" id=4]
+[ext_resource path="res://scene/charactermodel/EquipGeneric.tscn" type="PackedScene" id=3]
 [ext_resource path="res://assets/shader/color_replace.tres" type="Material" id=5]
 
 [sub_resource type="Animation" id=4]
@@ -55,32 +55,20 @@ offset = Vector2( -0.5, 0.5 )
 region_enabled = true
 region_rect = Rect2( 8, 40, 7, 7 )
 
-[node name="Equip" type="Sprite" parent="Torso/Arm/Hand1"]
-material = ExtResource( 4 )
-position = Vector2( -1, 0 )
-z_index = -1
-centered = false
-offset = Vector2( -3, -4 )
-region_enabled = true
-region_rect = Rect2( 0, 0, 28, 9 )
+[node name="Equip1" parent="Torso/Arm" instance=ExtResource( 3 )]
+offset = Vector2( 11, -0.5 )
 
 [node name="Hand2" type="Sprite" parent="Torso/Arm"]
 use_parent_material = true
 position = Vector2( 0, -9.53674e-07 )
 scale = Vector2( 1, -1 )
+z_index = -10
 texture = ExtResource( 1 )
 offset = Vector2( -0.5, 0.5 )
 region_enabled = true
 region_rect = Rect2( 8, 40, 7, 7 )
 
-[node name="Equip" type="Sprite" parent="Torso/Arm/Hand2"]
-material = ExtResource( 4 )
-position = Vector2( -1, 0 )
-z_index = -1
-centered = false
-offset = Vector2( -3, -4 )
-region_enabled = true
-region_rect = Rect2( 0, 0, 28, 9 )
+[node name="Equip2" parent="Torso/Arm" instance=ExtResource( 3 )]
 
 [node name="Head" type="Sprite" parent="Torso"]
 use_parent_material = true
